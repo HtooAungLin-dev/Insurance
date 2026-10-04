@@ -4,7 +4,7 @@ import { Car, Banknote, ShieldAlert, Award, TrendingUp } from 'lucide-react';
 import { MONTHS } from '../data/initialData';
 
 export const SummaryCards: React.FC = () => {
-  const { records, activeMonth, languageMode } = useVehicles();
+  const { records, activeMonth, selectedYear, languageMode } = useVehicles();
 
   const totalCars = records.length;
   const totalCarValue = records.reduce((sum, r) => sum + (r.carValue || 0), 0);
@@ -16,6 +16,8 @@ export const SummaryCards: React.FC = () => {
   const currentMonthLabel = activeMonth === 'all' 
     ? (languageMode === 'my' ? 'နှစ်ပတ်လည် အားလုံး' : 'All Months (Annual)')
     : MONTHS.find(m => m.key === activeMonth)?.labelEn || activeMonth;
+
+  const yearSuffix = selectedYear === 'all' ? '· All Expire Years' : `· Expire ${selectedYear}`;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-5">
@@ -31,7 +33,7 @@ export const SummaryCards: React.FC = () => {
           {totalCars}
         </div>
         <div className="text-[11px] text-slate-500 mt-0.5 truncate">
-          {currentMonthLabel}
+          {currentMonthLabel} {yearSuffix}
         </div>
       </div>
 

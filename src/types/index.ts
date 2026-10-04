@@ -19,7 +19,8 @@ export type InsuranceCompany = 'Young' | 'GGI' | 'FNI' | 'KBZ' | 'MI';
 export interface VehicleRecord {
   id: string;
   month: MonthKey;
-  year: number;
+  year: number; // Stored in the expire year (e.g. 2026, 2027, 2028, etc.)
+  expireYear?: number; // Explicit expire year
   srNo: number; // စဉ်
   vehicleNo: string; // ယာဉ်အမှတ် (Plate No. e.g. Mercedez 220 - 15, 2K/4521)
   vehicleModel?: string; // Car model / display name

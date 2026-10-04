@@ -7,9 +7,13 @@ import { ArrowRight, BarChart3, TrendingUp, ShieldAlert, Award } from 'lucide-re
 export const YearSummaryView: React.FC = () => {
   const { allRecords, selectedYear, setActiveMonth, languageMode } = useVehicles();
 
-  // Compute breakdown for each month
+  const scopedRecords = allRecords.filter(r => 
+    selectedYear === 'all' || (r.expireYear || r.year) === selectedYear
+  );
+
+  // Compute breakdown for each month for the selected expire year
   const monthlyStats = MONTHS.map(m => {
-    const recordsInMonth = allRecords.filter(r => r.month === m.key);
+    const recordsInMonth = scopedRecords.filter(r => r.month === m.key);
     const count = recordsInMonth.length;
     const carValue = recordsInMonth.reduce((acc, cur) => acc + (cur.carValue || 0), 0);
     const premium = recordsInMonth.reduce((acc, cur) => acc + (cur.premiumAmount || 0), 0);
@@ -28,12 +32,14 @@ export const YearSummaryView: React.FC = () => {
     };
   });
 
-  const grandTotalCars = allRecords.length;
-  const grandTotalCarValue = allRecords.reduce((acc, cur) => acc + (cur.carValue || 0), 0);
-  const grandTotalPremium = allRecords.reduce((acc, cur) => acc + (cur.premiumAmount || 0), 0);
-  const grandTotalClaims = allRecords.filter(r => r.claimDate && r.claimDate.trim() !== '').length;
+  const grandTotalCars = scopedRecords.length;
+  const grandTotalCarValue = scopedRecords.reduce((acc, cur) => acc + (cur.carValue || 0), 0);
+  const grandTotalPremium = scopedRecords.reduce((acc, cur) => acc + (cur.premiumAmount || 0), 0);
+  const grandTotalClaims = scopedRecords.filter(r => r.claimDate && r.claimDate.trim() !== '').length;
 
   const maxPremium = Math.max(...monthlyStats.map(s => s.premium), 1);
+
+  const yearDisplay = selectedYear === 'all' ? 'All Expire Years' : `Expire Year ${selectedYear}`;
 
   return (
     <div className="space-y-5 mb-6">
@@ -44,8 +50,8 @@ export const YearSummaryView: React.FC = () => {
             <BarChart3 className="w-5 h-5 text-blue-600" />
             <h3 className="text-sm font-bold text-slate-900">
               {languageMode === 'my' 
-                ? `${selectedYear} ခုနှစ် လအလိုက် အာမခံကြေးနှင့် ယာဉ်အရေအတွက် နှိုင်းယှဉ်ချက်` 
-                : `${selectedYear} Monthly Premium & Fleet Distribution (Jan - Dec)`}
+                ? `${yearDisplay} လအလိုက် အာမခံကြေးနှင့် ယာဉ်အရေအတွက် နှိုင်းယှဉ်ချက်` 
+                : `${yearDisplay} Monthly Premium & Fleet Distribution (Jan - Dec)`}
             </h3>
           </div>
           <span className="text-xs font-semibold text-slate-500">

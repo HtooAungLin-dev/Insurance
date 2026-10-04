@@ -3,6 +3,7 @@ import { X, Check, Calculator, Sparkles, Archive, FileEdit } from 'lucide-react'
 import { VehicleRecord, MonthKey, RecordStatus, InsuranceCompany } from '../types';
 import { MONTHS, INSURANCE_COMPANIES } from '../data/initialData';
 import { useVehicles } from '../context/VehicleContext';
+import { extractExpireYear } from '../utils/dateUtils';
 
 interface RecordModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
 
   // Form states
   const [month, setMonth] = useState<MonthKey>('Jan');
+  const [expireYear, setExpireYear] = useState<number>(2027);
   const [insuranceCompany, setInsuranceCompany] = useState<InsuranceCompany>('Young');
   const [vehicleNo, setVehicleNo] = useState('');
   const [vehicleModel, setVehicleModel] = useState('');
@@ -44,6 +46,8 @@ export const RecordModal: React.FC<RecordModalProps> = ({
     if (isOpen) {
       if (recordToEdit) {
         setMonth(recordToEdit.month);
+        const initYear = recordToEdit.expireYear || recordToEdit.year || extractExpireYear(recordToEdit.validityPeriod, typeof selectedYear === 'number' ? selectedYear : 2027);
+        setExpireYear(initYear);
         setInsuranceCompany(recordToEdit.insuranceCompany || 'Young');
         setVehicleNo(recordToEdit.vehicleNo || '');
         setVehicleModel(recordToEdit.vehicleModel || '');
@@ -62,6 +66,8 @@ export const RecordModal: React.FC<RecordModalProps> = ({
         // Adding new
         const initialMonth = activeMonth === 'all' || activeMonth === 'archive' ? 'Jan' : activeMonth;
         setMonth(initialMonth);
+        const initYear = typeof selectedYear === 'number' ? selectedYear : 2027;
+        setExpireYear(initYear);
         setInsuranceCompany('Young');
         setVehicleNo('');
         setVehicleModel('');
@@ -89,7 +95,8 @@ export const RecordModal: React.FC<RecordModalProps> = ({
     saveDraftToArchive({
       id: recordToEdit?.id,
       month,
-      year: selectedYear,
+      year: expireYear,
+      expireYear,
       insuranceCompany,
       vehicleNo: vehicleNo.trim() || 'Draft Vehicle',
       vehicleModel: vehicleModel.trim(),
@@ -129,10 +136,11 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // No mandatory fields required per user request
+    // Stored in the expire year per user requirement
     const payload = {
       month,
-      year: selectedYear,
+      year: expireYear,
+      expireYear,
       insuranceCompany,
       vehicleNo: vehicleNo.trim() || '—',
       vehicleModel: vehicleModel.trim(),
@@ -193,8 +201,8 @@ export const RecordModal: React.FC<RecordModalProps> = ({
 
         {/* Modal Body Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
-          {/* Row 1: Month, Insurance Company & Status */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Row 1: Month, Expire Year, Insurance Company & Status */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Target Month / လ
@@ -212,10 +220,28 @@ export const RecordModal: React.FC<RecordModalProps> = ({
               </select>
             </div>
 
+            {/* Expire Year Field */}
+            <div>
+              <label className="block text-xs font-semibold text-blue-900 mb-1.5 flex items-center justify-between">
+                <span>သက်တမ်းကုန်နှစ် (Expire Year)</span>
+              </label>
+              <select
+                value={expireYear}
+                onChange={(e) => setExpireYear(Number(e.target.value))}
+                className="w-full px-3 py-2 bg-blue-50/60 border border-blue-200 focus:border-blue-500 rounded-lg text-sm font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                {[2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032].map((yr) => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Insurance Company Dropdown: Young, GGI, FNI, KBZ, MI */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Insurance Co. / အာမခံကုမ္ပဏီ
+                Insurance Co. / အာမခံ
               </label>
               <select
                 value={insuranceCompany}
@@ -399,8 +425,15 @@ export const RecordModal: React.FC<RecordModalProps> = ({
               <input
                 type="text"
                 value={validityPeriod}
-                onChange={(e) => setValidityPeriod(e.target.value)}
-                placeholder="e.g. Dec 30, 2026 05:18 or 1 Year"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setValidityPeriod(val);
+                  const detected = extractExpireYear(val);
+                  if (detected && detected >= 2020 && detected <= 2050) {
+                    setExpireYear(detected);
+                  }
+                }}
+                placeholder="e.g. Dec 30, 2027 or 1 Year"
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
             </div>

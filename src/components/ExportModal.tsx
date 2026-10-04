@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { MonthKey, InsuranceCompany, VehicleRecord } from '../types';
 import { MONTHS, INSURANCE_COMPANIES } from '../data/initialData';
 import { generateVehicleLedgerPDF } from '../utils/pdfExport';
+import { extractExpireYear } from '../utils/dateUtils';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -47,6 +48,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
       list = allRecords.filter(r => r.month === pdfPeriod);
     }
 
+    if (selectedYear !== 'all') {
+      list = list.filter(r => (r.expireYear || r.year) === selectedYear);
+    }
+
     if (pdfCompany !== 'all') {
       list = list.filter(r => r.insuranceCompany === pdfCompany);
     }
@@ -68,7 +73,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
       generateVehicleLedgerPDF({
         records: exportRecords,
         monthTitle: monthLabel,
-        year: selectedYear,
+        year: selectedYear === 'all' ? 'All Expire Years' : selectedYear,
         generatedBy: currentUser?.displayName || 'Htay Aung',
         insuranceFilter: pdfCompany === 'all' ? 'All Companies' : pdfCompany,
       });
@@ -164,9 +169,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
         if (!line) continue;
         const parts = line.split(',').map(s => s.replace(/(^"|"$)/g, '').trim());
         if (parts.length >= 2) {
+          const detectedYear = extractExpireYear(parts[8] || '', typeof selectedYear === 'number' ? selectedYear : 2027);
           addRecord({
             month: (activeMonth === 'all' || activeMonth === 'archive') ? 'Jan' : activeMonth,
-            year: selectedYear,
+            year: detectedYear,
+            expireYear: detectedYear,
             vehicleNo: parts[1] || parts[0] || 'Imported Car',
             insuranceCompany: (parts[2] as InsuranceCompany) || 'Young',
             ownerName: parts[3] || 'Customer',
@@ -242,10 +249,10 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
                   onChange={(e) => setPdfPeriod(e.target.value)}
                   className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="all">Full Year {selectedYear} (Jan - Dec)</option>
+                  <option value="all">Full Year (Jan - Dec)</option>
                   {MONTHS.map(m => (
                     <option key={m.key} value={m.key}>
-                      {m.labelEn} {selectedYear} ({m.labelMy})
+                      {m.labelEn} ({m.labelMy})
                     </option>
                   ))}
                 </select>

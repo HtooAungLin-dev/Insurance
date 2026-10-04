@@ -11,6 +11,7 @@ export const MonthSelector: React.FC = () => {
     setActiveMonth, 
     selectedYear, 
     setSelectedYear, 
+    availableYears,
     monthlyCounts, 
     languageMode,
     allRecords,
@@ -31,27 +32,42 @@ export const MonthSelector: React.FC = () => {
             <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
               <span>{languageMode === 'my' ? 'လအလိုက် ရွေးချယ်မှု' : 'Monthly View'}</span>
               <span className="text-slate-400 font-normal">/</span>
-              <span className="text-blue-600 font-bold">{selectedYear}</span>
+              <span className="text-blue-600 font-bold">
+                {selectedYear === 'all' ? 'All Expire Years' : `Expire Year: ${selectedYear}`}
+              </span>
             </h2>
             <p className="text-[11px] text-slate-500">
               {languageMode === 'my' 
-                ? 'ဇန်နဝါရီ မှ ဒီဇင်ဘာအထိ လအလိုက် အချိန်မရွေး ပြင်ဆင်၊ ဖြည့်စွက်၊ ဖျက်နိုင်ပါသည်'
-                : 'Select any month from Jan to Dec. All modifications sync in real time.'}
+                ? 'သက်တမ်းကုန်ဆုံးမည့်နှစ် (Expire Year) အလိုက် ယာဉ်မှတ်တမ်းများကို စီမံနိုင်ပါသည်'
+                : 'Manage vehicle records organized by their policy expire year with real-time sync.'}
             </p>
           </div>
         </div>
 
-        {/* Year Selector */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto">
-          <span className="text-xs text-slate-500 font-medium">Year:</span>
-          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs font-semibold">
-            {[2026, 2025, 2024].map((year) => (
+        {/* Expire Year Selector */}
+        <div className="flex items-center gap-1.5 self-start sm:self-auto flex-wrap">
+          <span className="text-xs text-slate-500 font-semibold whitespace-nowrap">
+            {languageMode === 'my' ? 'သက်တမ်းကုန်နှစ်:' : 'Expire Year:'}
+          </span>
+          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs font-semibold overflow-x-auto max-w-full">
+            <button
+              onClick={() => setSelectedYear('all')}
+              className={`min-h-[30px] px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
+                selectedYear === 'all'
+                  ? 'bg-blue-600 text-white shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              All Years
+            </button>
+
+            {availableYears.map((year) => (
               <button
                 key={year}
                 onClick={() => setSelectedYear(year)}
-                className={`min-h-[32px] px-2.5 py-1 rounded-md transition-all ${
+                className={`min-h-[30px] px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
                   selectedYear === year 
-                    ? 'bg-white text-blue-600 shadow-xs font-bold' 
+                    ? 'bg-white text-blue-600 shadow-xs font-bold border border-slate-200/60' 
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >

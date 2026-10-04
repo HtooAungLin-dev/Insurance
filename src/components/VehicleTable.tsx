@@ -246,7 +246,12 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
 
                 {/* Validity & Pickup */}
                 <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-100">
-                  <div><strong className="text-slate-600">Validity:</strong> {record.validityPeriod}</div>
+                  <div className="flex items-center justify-between">
+                    <div><strong className="text-slate-600">Validity:</strong> {record.validityPeriod}</div>
+                    <span className="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">
+                      Expire: {record.expireYear || record.year}
+                    </span>
+                  </div>
                   {record.pickupArea && <div><strong className="text-slate-600">Area:</strong> {record.pickupArea}</div>}
                   {record.claimDate && <div className="text-rose-600 font-semibold">● Claim: {record.claimDate}</div>}
                 </div>
@@ -545,9 +550,12 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                       </td>
                     )}
 
-                    {/* သက်တမ်း / VALIDITY / PICKUP TIME */}
+                    {/* သက်တမ်း / VALIDITY / EXPIRE YEAR */}
                     <td className="py-3.5 px-3 text-xs text-slate-600 whitespace-nowrap">
-                      {record.validityPeriod || '—'}
+                      <div className="font-medium text-slate-700">{record.validityPeriod || '—'}</div>
+                      <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">
+                        Expire: {record.expireYear || record.year}
+                      </span>
                     </td>
 
                     {/* Full Mode: Claim dt */}
