@@ -232,15 +232,15 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                 <div className="grid grid-cols-3 gap-2 py-2.5 my-1 text-xs">
                   <div>
                     <span className="text-[10px] text-slate-400 block">Premium</span>
-                    <span className="font-bold text-emerald-700">${record.premiumAmount?.toLocaleString()}</span>
+                    <span className="font-bold text-emerald-700">{record.premiumAmount ? record.premiumAmount.toLocaleString() : '0'} MMK</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 block">Car Value</span>
-                    <span className="font-semibold text-slate-700">${record.carValue?.toLocaleString()}</span>
+                    <span className="font-semibold text-slate-700">{record.carValue ? record.carValue.toLocaleString() : '0'} MMK</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-400 block">Windshield</span>
-                    <span className="font-semibold text-slate-600">${record.windshieldValue?.toLocaleString()}</span>
+                    <span className="font-semibold text-slate-600">{record.windshieldValue ? record.windshieldValue.toLocaleString() : '0'} MMK</span>
                   </div>
                 </div>
 
@@ -522,20 +522,20 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                     {/* Full Mode: ကားတန်ဖိုး (Car Value) */}
                     {viewMode === 'full' && (
                       <td className="py-3.5 px-3 text-right font-medium text-slate-800">
-                        ${record.carValue ? record.carValue.toLocaleString() : '0'}
+                        {record.carValue ? `${record.carValue.toLocaleString()} MMK` : '0 MMK'}
                       </td>
                     )}
 
                     {/* Full Mode: လေကာမှန်တန်ဖိုး (Windshield Value) */}
                     {viewMode === 'full' && (
                       <td className="py-3.5 px-3 text-right font-medium text-slate-600">
-                        ${record.windshieldValue ? record.windshieldValue.toLocaleString() : '0'}
+                        {record.windshieldValue ? `${record.windshieldValue.toLocaleString()} MMK` : '0 MMK'}
                       </td>
                     )}
 
                     {/* အာမခံကြေး / AMOUNT */}
                     <td className="py-3.5 px-3 text-right font-semibold text-slate-900">
-                      ${record.premiumAmount ? record.premiumAmount.toLocaleString() : '0'}
+                      {record.premiumAmount ? `${record.premiumAmount.toLocaleString()} MMK` : '0 MMK'}
                     </td>
 
                     {/* PICKUP AREA (standard view) */}

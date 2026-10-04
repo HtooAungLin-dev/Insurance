@@ -113,11 +113,11 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose }) =
             {/* Premium Amount Range */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                Premium Range / အာမခံကြေး ($)
+                Premium Range / အာမခံကြေး (MMK)
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <span className="text-[11px] text-slate-400 block mb-1">Min ($)</span>
+                  <span className="text-[11px] text-slate-400 block mb-1">Min (MMK)</span>
                   <input
                     type="number"
                     placeholder="Min 0"
@@ -130,10 +130,10 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose }) =
                   />
                 </div>
                 <div>
-                  <span className="text-[11px] text-slate-400 block mb-1">Max ($)</span>
+                  <span className="text-[11px] text-slate-400 block mb-1">Max (MMK)</span>
                   <input
                     type="number"
-                    placeholder="Max 5000"
+                    placeholder="Max 5000000"
                     value={filters.maxAmount ?? ''}
                     onChange={(e) => setFilters(prev => ({ 
                       ...prev, 

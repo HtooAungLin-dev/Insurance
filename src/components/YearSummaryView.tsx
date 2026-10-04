@@ -49,7 +49,7 @@ export const YearSummaryView: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs font-semibold text-slate-500">
-            Grand Total Premium: <strong className="text-emerald-700">${grandTotalPremium.toLocaleString()}</strong>
+            Grand Total Premium: <strong className="text-emerald-700">{grandTotalPremium.toLocaleString()} MMK</strong>
           </span>
         </div>
 
@@ -65,10 +65,10 @@ export const YearSummaryView: React.FC = () => {
                 key={stat.month} 
                 onClick={() => setActiveMonth(stat.month as MonthKey)}
                 className="flex flex-col items-center gap-1.5 h-full justify-end cursor-pointer group"
-                title={`${stat.labelEn}: $${stat.premium.toLocaleString()} (${stat.count} vehicles)`}
+                title={`${stat.labelEn}: ${stat.premium.toLocaleString()} MMK (${stat.count} vehicles)`}
               >
                 <span className="text-[10px] font-bold text-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">
-                  ${Math.round(stat.premium / 1000)}k
+                  {Math.round(stat.premium / 1000)}k
                 </span>
                 <div 
                   className={`w-full max-w-[28px] rounded-t-md transition-all group-hover:bg-blue-600 ${
@@ -102,8 +102,8 @@ export const YearSummaryView: React.FC = () => {
               <tr className="border-b border-slate-200 bg-white text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                 <th className="py-3 px-4">Month / လ</th>
                 <th className="py-3 px-4 text-center">Vehicles / ယာဉ်စင်းရေ</th>
-                <th className="py-3 px-4 text-right">Car Value / ကားတန်ဖိုး</th>
-                <th className="py-3 px-4 text-right">Premium / အာမခံကြေး</th>
+                <th className="py-3 px-4 text-right">Car Value (MMK)</th>
+                <th className="py-3 px-4 text-right">Premium (MMK)</th>
                 <th className="py-3 px-4 text-center">Claims / လျော်ကြေး</th>
                 <th className="py-3 px-4 text-center">Commissions</th>
                 <th className="py-3 pr-4 text-right">Action</th>
@@ -123,10 +123,10 @@ export const YearSummaryView: React.FC = () => {
                     {stat.count}
                   </td>
                   <td className="py-3 px-4 text-right font-medium text-slate-700">
-                    ${stat.carValue.toLocaleString()}
+                    {stat.carValue.toLocaleString()} MMK
                   </td>
                   <td className="py-3 px-4 text-right font-bold text-emerald-700">
-                    ${stat.premium.toLocaleString()}
+                    {stat.premium.toLocaleString()} MMK
                   </td>
                   <td className="py-3 px-4 text-center">
                     {stat.claims > 0 ? (
@@ -153,8 +153,8 @@ export const YearSummaryView: React.FC = () => {
               <tr className="bg-slate-50/80 font-bold text-slate-900 border-t-2 border-slate-200">
                 <td className="py-3.5 px-4 uppercase tracking-wider">Annual Total</td>
                 <td className="py-3.5 px-4 text-center text-blue-700">{grandTotalCars}</td>
-                <td className="py-3.5 px-4 text-right">${grandTotalCarValue.toLocaleString()}</td>
-                <td className="py-3.5 px-4 text-right text-emerald-700">${grandTotalPremium.toLocaleString()}</td>
+                <td className="py-3.5 px-4 text-right">{grandTotalCarValue.toLocaleString()} MMK</td>
+                <td className="py-3.5 px-4 text-right text-emerald-700">{grandTotalPremium.toLocaleString()} MMK</td>
                 <td className="py-3.5 px-4 text-center text-rose-700">{grandTotalClaims}</td>
                 <td className="py-3.5 px-4 text-center">—</td>
                 <td className="py-3.5 pr-4 text-right text-slate-400">All 12 Months</td>

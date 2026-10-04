@@ -46,19 +46,19 @@ export const TRANSLATIONS = {
     dual: 'ပိုင်ရှင်အမည် (Customer)',
   },
   colCarValue: {
-    en: 'CAR VALUE',
-    my: 'ကားတန်ဖိုး',
-    dual: 'ကားတန်ဖိုး (Car Value)',
+    en: 'CAR VALUE (MMK)',
+    my: 'ကားတန်ဖိုး (ကျပ်)',
+    dual: 'ကားတန်ဖိုး (Car Value MMK)',
   },
   colWindshield: {
-    en: 'WINDSHIELD VAL',
-    my: 'လေကာမှန်တန်ဖိုး',
-    dual: 'လေကာမှန်တန်ဖိုး (Windshield)',
+    en: 'WINDSHIELD (MMK)',
+    my: 'လေကာမှန် (ကျပ်)',
+    dual: 'လေကာမှန် (Windshield MMK)',
   },
   colPremium: {
-    en: 'AMOUNT / PREMIUM',
-    my: 'အာမခံကြေး',
-    dual: 'အာမခံကြေး (Amount)',
+    en: 'PREMIUM (MMK)',
+    my: 'အာမခံကြေး (ကျပ်)',
+    dual: 'အာမခံကြေး (Premium MMK)',
   },
   colValidity: {
     en: 'VALIDITY / PERIOD',

@@ -311,7 +311,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
           <div className="p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/70 space-y-3">
             <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
               <span>Financials & Premium Calculation</span>
-              <span className="text-[11px] text-slate-400 font-normal">USD ($)</span>
+              <span className="text-[11px] text-slate-500 font-semibold">Myanmar Kyats (MMK)</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -321,14 +321,14 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                   ကားတန်ဖိုး (Car Value)
                 </label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
                   <input
                     type="number"
                     value={carValue}
                     onChange={(e) => setCarValue(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="35000"
-                    className="w-full pl-6 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="35000000"
+                    className="w-full pl-3 pr-12 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
+                  <span className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 text-xs font-medium">MMK</span>
                 </div>
               </div>
 
@@ -349,14 +349,14 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                   )}
                 </div>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
                   <input
                     type="number"
                     value={windshieldValue}
                     onChange={(e) => setWindshieldValue(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="700"
-                    className="w-full pl-6 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="700000"
+                    className="w-full pl-3 pr-12 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
+                  <span className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 text-xs font-medium">MMK</span>
                 </div>
               </div>
 
@@ -377,14 +377,14 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                   )}
                 </div>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">$</span>
                   <input
                     type="number"
                     value={premiumAmount}
                     onChange={(e) => setPremiumAmount(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="450"
-                    className="w-full pl-6 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                    placeholder="450000"
+                    className="w-full pl-3 pr-12 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-emerald-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
+                  <span className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-emerald-600 text-xs font-medium">MMK</span>
                 </div>
               </div>
             </div>

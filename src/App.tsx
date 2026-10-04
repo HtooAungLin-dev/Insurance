@@ -5,6 +5,8 @@
 
 import React, { useState } from 'react';
 import { VehicleProvider, useVehicles } from './context/VehicleContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginPage } from './components/LoginPage';
 import { Header } from './components/Header';
 import { MonthSelector } from './components/MonthSelector';
 import { SummaryCards } from './components/SummaryCards';
@@ -125,10 +127,24 @@ function DashboardContent() {
   );
 }
 
-export default function App() {
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
   return (
     <VehicleProvider>
       <DashboardContent />
     </VehicleProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

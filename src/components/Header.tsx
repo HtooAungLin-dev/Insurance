@@ -11,9 +11,11 @@ import {
   Sparkles,
   Layers,
   Archive,
-  Trash2
+  Trash2,
+  LogOut
 } from 'lucide-react';
 import { useVehicles } from '../context/VehicleContext';
+import { useAuth } from '../context/AuthContext';
 import { TRANSLATIONS, getText } from '../utils/translations';
 import { LanguageMode } from '../types';
 
@@ -31,6 +33,8 @@ export const Header: React.FC = () => {
     setActiveMonth,
     archiveCount
   } = useVehicles();
+
+  const { currentUser, logout } = useAuth();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -194,18 +198,18 @@ export const Header: React.FC = () => {
             )}
           </button>
 
-          {/* User Profile (from Image 1: Jane Cooper + avatar + chevron) */}
+          {/* User Profile: Htay Aung */}
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="min-h-[38px] flex items-center gap-1.5 sm:gap-2 pl-1 pr-1.5 sm:pr-2 py-1 rounded-lg hover:bg-slate-100/70 transition-colors focus:outline-none"
             >
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces&auto=format&q=80"
-                alt="Jane Cooper"
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-200 ring-2 ring-white shadow-xs"
-              />
-              <span className="text-sm font-semibold text-slate-800 hidden md:inline">Jane Cooper</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs border border-blue-400/30 select-none">
+                HA
+              </div>
+              <span className="text-sm font-semibold text-slate-800 hidden md:inline">
+                {currentUser?.displayName || 'Htay Aung'}
+              </span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
             </button>
 
@@ -215,11 +219,13 @@ export const Header: React.FC = () => {
                   className="fixed inset-0 z-40" 
                   onClick={() => setShowProfileMenu(false)} 
                 />
-                <div className="absolute right-0 mt-1 w-56 bg-white rounded-lg shadow-xl border border-slate-200/80 py-1.5 z-50 text-xs">
+                <div className="absolute right-0 mt-1 w-60 bg-white rounded-lg shadow-xl border border-slate-200/80 py-1.5 z-50 text-xs">
                   <div className="px-3.5 py-2 border-b border-slate-100">
-                    <p className="font-semibold text-slate-800">Jane Cooper</p>
-                    <p className="text-slate-500 text-[11px] truncate">jane.cooper@automanager.com</p>
-                    <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Fleet Administrator</span>
+                    <p className="font-semibold text-slate-800">{currentUser?.displayName || 'Htay Aung'}</p>
+                    <p className="text-slate-500 text-[11px] truncate">{currentUser?.email || 'htayaung@autoledger.com'}</p>
+                    <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">
+                      {currentUser?.role || 'Fleet & Insurance Director'}
+                    </span>
                   </div>
                   
                   <div className="py-1">
@@ -254,6 +260,19 @@ export const Header: React.FC = () => {
                     >
                       <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
                       <span>Force Real-Time Sync</span>
+                    </button>
+                  </div>
+
+                  <div className="pt-1 border-t border-slate-100">
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition-colors font-semibold"
+                    >
+                      <LogOut className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Sign Out (Htay Aung)</span>
                     </button>
                   </div>
                 </div>

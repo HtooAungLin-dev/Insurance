@@ -1,6 +1,6 @@
 import React from 'react';
 import { useVehicles } from '../context/VehicleContext';
-import { Car, DollarSign, ShieldAlert, Award, TrendingUp } from 'lucide-react';
+import { Car, Banknote, ShieldAlert, Award, TrendingUp } from 'lucide-react';
 import { MONTHS } from '../data/initialData';
 
 export const SummaryCards: React.FC = () => {
@@ -41,10 +41,10 @@ export const SummaryCards: React.FC = () => {
           <span className="text-xs font-medium">
             {languageMode === 'my' ? 'ကားတန်ဖိုး စုစုပေါင်း' : 'Total Car Value'}
           </span>
-          <DollarSign className="w-4 h-4 text-indigo-500" />
+          <Banknote className="w-4 h-4 text-indigo-500" />
         </div>
-        <div className="text-xl font-bold text-slate-900 tracking-tight">
-          ${totalCarValue.toLocaleString()}
+        <div className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight truncate">
+          {totalCarValue.toLocaleString()} <span className="text-xs font-semibold text-slate-500">MMK</span>
         </div>
         <div className="text-[11px] text-slate-500 mt-0.5">
           {languageMode === 'my' ? 'ယာဉ်တန်ဖိုး စာရင်း' : 'Insured fleet asset'}
@@ -59,8 +59,8 @@ export const SummaryCards: React.FC = () => {
           </span>
           <TrendingUp className="w-4 h-4 text-emerald-500" />
         </div>
-        <div className="text-xl font-bold text-emerald-700 tracking-tight">
-          ${totalPremium.toLocaleString()}
+        <div className="text-lg sm:text-xl font-bold text-emerald-700 tracking-tight truncate">
+          {totalPremium.toLocaleString()} <span className="text-xs font-semibold text-emerald-600">MMK</span>
         </div>
         <div className="text-[11px] text-slate-500 mt-0.5">
           {languageMode === 'my' ? 'လအလိုက် ရရှိငွေ' : 'Revenue / month'}
@@ -73,10 +73,10 @@ export const SummaryCards: React.FC = () => {
           <span className="text-xs font-medium">
             {languageMode === 'my' ? 'လေကာမှန်တန်ဖိုး' : 'Windshield Cover'}
           </span>
-          <DollarSign className="w-4 h-4 text-amber-500" />
+          <Banknote className="w-4 h-4 text-amber-500" />
         </div>
-        <div className="text-xl font-bold text-slate-900 tracking-tight">
-          ${totalWindshield.toLocaleString()}
+        <div className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight truncate">
+          {totalWindshield.toLocaleString()} <span className="text-xs font-semibold text-slate-500">MMK</span>
         </div>
         <div className="text-[11px] text-slate-500 mt-0.5">
           {languageMode === 'my' ? 'မှန်အာမခံတန်ဖိုး' : 'Glass protection'}

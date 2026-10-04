@@ -69,3 +69,11 @@ export interface SyncMessage {
   senderId: string;
   data?: any;
 }
+
+export interface AuthUser {
+  username: string;
+  displayName: string;
+  role: string;
+  email: string;
+  avatarUrl?: string;
+}
