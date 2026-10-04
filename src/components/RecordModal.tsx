@@ -128,27 +128,15 @@ export const RecordModal: React.FC<RecordModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: Record<string, string> = {};
 
-    if (!vehicleNo.trim()) {
-      newErrors.vehicleNo = 'Vehicle No. (ယာဉ်အမှတ်) is required';
-    }
-    if (!ownerName.trim()) {
-      newErrors.ownerName = 'Owner / Customer name (ပိုင်ရှင်အမည်) is required';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+    // No mandatory fields required per user request
     const payload = {
       month,
       year: selectedYear,
       insuranceCompany,
-      vehicleNo: vehicleNo.trim(),
+      vehicleNo: vehicleNo.trim() || '—',
       vehicleModel: vehicleModel.trim(),
-      ownerName: ownerName.trim(),
+      ownerName: ownerName.trim() || '—',
       status,
       carValue: typeof carValue === 'number' ? carValue : 0,
       windshieldValue: typeof windshieldValue === 'number' ? windshieldValue : 0,
@@ -209,7 +197,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Target Month / လ *
+                Target Month / လ
               </label>
               <select
                 value={month}
@@ -227,7 +215,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
             {/* Insurance Company Dropdown: Young, GGI, FNI, KBZ, MI */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Insurance Co. / အာမခံကုမ္ပဏီ *
+                Insurance Co. / အာမခံကုမ္ပဏီ
               </label>
               <select
                 value={insuranceCompany}
@@ -244,7 +232,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Status / အခြေအနေ *
+                Status / အခြေအနေ
               </label>
               <select
                 value={status}
@@ -265,22 +253,15 @@ export const RecordModal: React.FC<RecordModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                ယာဉ်အမှတ် (Vehicle No. / Plate) *
+                ယာဉ်အမှတ် (Vehicle No. / Plate)
               </label>
               <input
                 type="text"
                 value={vehicleNo}
                 onChange={(e) => setVehicleNo(e.target.value)}
                 placeholder="e.g. Mercedez 220 - 15 or 2K/4512"
-                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 ${
-                  errors.vehicleNo 
-                    ? 'border-rose-400 focus:ring-rose-500/20' 
-                    : 'border-slate-200 focus:ring-blue-500/20 focus:border-blue-500'
-                }`}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
-              {errors.vehicleNo && (
-                <p className="text-xs text-rose-500 mt-1">{errors.vehicleNo}</p>
-              )}
             </div>
 
             <div>
@@ -301,22 +282,15 @@ export const RecordModal: React.FC<RecordModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                ပိုင်ရှင်အမည် (Customer / Owner) *
+                ပိုင်ရှင်အမည် (Customer / Owner)
               </label>
               <input
                 type="text"
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
                 placeholder="e.g. Courtney Henry or ဦးအောင်ကျော်"
-                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 ${
-                  errors.ownerName 
-                    ? 'border-rose-400 focus:ring-rose-500/20' 
-                    : 'border-slate-200 focus:ring-blue-500/20 focus:border-blue-500'
-                }`}
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
-              {errors.ownerName && (
-                <p className="text-xs text-rose-500 mt-1">{errors.ownerName}</p>
-              )}
             </div>
 
             <div>

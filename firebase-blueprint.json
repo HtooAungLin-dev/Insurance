@@ -27,7 +27,7 @@
         "createdAt": { "type": "string" },
         "updatedAt": { "type": "string" }
       },
-      "required": ["vehicleNo", "ownerName", "month", "status"]
+      "required": []
     },
     "ArchiveItem": {
       "title": "ArchiveItem",

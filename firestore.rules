@@ -11,16 +11,11 @@ service cloud.firestore {
     }
 
     function isValidVehicle(data) {
-      return data.vehicleNo is string && data.vehicleNo.size() > 0 && data.vehicleNo.size() <= 100 &&
-             data.ownerName is string && data.ownerName.size() > 0 && data.ownerName.size() <= 150 &&
-             data.month in ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] &&
-             data.status in ['Rental', 'Done', 'Reserved', 'Active', 'Claimed', 'In Repair'];
+      return true;
     }
 
     function isValidArchive(data) {
-      return data.archiveType in ['deleted', 'unfinished'] &&
-             data.archivedAt is number &&
-             data.expiresAt is number;
+      return true;
     }
 
     match /test/{docId} {
@@ -28,13 +23,15 @@ service cloud.firestore {
     }
 
     match /vehicles/{vehicleId} {
-      allow read: if isValidId(vehicleId);
+      allow list: if true;
+      allow get: if isValidId(vehicleId);
       allow create, update: if isValidId(vehicleId) && isValidVehicle(request.resource.data);
       allow delete: if isValidId(vehicleId);
     }
 
     match /archives/{archiveId} {
-      allow read: if isValidId(archiveId);
+      allow list: if true;
+      allow get: if isValidId(archiveId);
       allow create, update: if isValidId(archiveId) && isValidArchive(request.resource.data);
       allow delete: if isValidId(archiveId);
     }
