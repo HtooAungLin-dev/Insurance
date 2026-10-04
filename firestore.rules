@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidVehicle(data) {
+      return data.vehicleNo is string && data.vehicleNo.size() > 0 && data.vehicleNo.size() <= 100 &&
+             data.ownerName is string && data.ownerName.size() > 0 && data.ownerName.size() <= 150 &&
+             data.month in ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] &&
+             data.status in ['Rental', 'Done', 'Reserved', 'Active', 'Claimed', 'In Repair'];
+    }
+
+    function isValidArchive(data) {
+      return data.archiveType in ['deleted', 'unfinished'] &&
+             data.archivedAt is number &&
+             data.expiresAt is number;
+    }
+
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if isValidId(vehicleId);
+      allow create, update: if isValidId(vehicleId) && isValidVehicle(request.resource.data);
+      allow delete: if isValidId(vehicleId);
+    }
+
+    match /archives/{archiveId} {
+      allow read: if isValidId(archiveId);
+      allow create, update: if isValidId(archiveId) && isValidArchive(request.resource.data);
+      allow delete: if isValidId(archiveId);
+    }
+  }
+}
