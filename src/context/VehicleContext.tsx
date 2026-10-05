@@ -30,6 +30,8 @@ interface VehicleContextType {
   selectedYear: number | 'all';
   setSelectedYear: (year: number | 'all') => void;
   availableYears: number[];
+  yearCounts: Record<number, number>;
+  addCustomYear: (year: number) => void;
   
   // Search & Filtering
   searchQuery: string;
@@ -106,9 +108,10 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [archiveItems, setArchiveItems] = useState<ArchiveItem[]>([]);
   const [isFirestoreConnected, setIsFirestoreConnected] = useState<boolean>(true);
 
-  // Navigation: Expire Year (defaults to 2027 or 'all')
-  const [activeMonth, setActiveMonth] = useState<MonthKey | 'all' | 'archive'>('Jan');
-  const [selectedYear, setSelectedYear] = useState<number | 'all'>(2027);
+  // Navigation: Expire Year (defaults to 'all' for instant fleet overview)
+  const [activeMonth, setActiveMonth] = useState<MonthKey | 'all' | 'archive'>('all');
+  const [selectedYear, setSelectedYear] = useState<number | 'all'>('all');
+  const [customYears, setCustomYears] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [languageMode, setLanguageMode] = useState<LanguageMode>('dual');
@@ -222,16 +225,52 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return counts;
   }, [allRecords, selectedYear]);
 
-  // Compute all available expire years
+  // Allow user to dynamically add any custom expire year
+  const addCustomYear = useCallback((year: number) => {
+    if (year >= 2000 && year <= 2100) {
+      setCustomYears(prev => Array.from(new Set([...prev, year])).sort((a, b) => a - b));
+      setSelectedYear(year);
+    }
+  }, []);
+
+  // Compute all available expire years strictly from data + custom added years
   const availableYears = useMemo(() => {
-    const yearsSet = new Set<number>([2025, 2026, 2027, 2028, 2029, 2030]);
+    const yearsSet = new Set<number>();
+    
+    // Dynamically derive from existing records
     allRecords.forEach(r => {
       const y = r.expireYear || r.year;
-      if (y && typeof y === 'number') {
+      if (typeof y === 'number' && !isNaN(y) && y >= 2000 && y <= 2100) {
         yearsSet.add(y);
       }
     });
+
+    // Include any custom years user added
+    customYears.forEach(y => yearsSet.add(y));
+
+    // Include selectedYear if it's a specific year
+    if (typeof selectedYear === 'number' && !isNaN(selectedYear)) {
+      yearsSet.add(selectedYear);
+    }
+
+    // Fallback if no records exist yet
+    if (yearsSet.size === 0) {
+      yearsSet.add(new Date().getFullYear());
+    }
+
     return Array.from(yearsSet).sort((a, b) => a - b);
+  }, [allRecords, customYears, selectedYear]);
+
+  // Compute dynamic vehicle counts per year
+  const yearCounts = useMemo(() => {
+    const counts: Record<number, number> = {};
+    allRecords.forEach(r => {
+      const y = r.expireYear || r.year;
+      if (typeof y === 'number' && !isNaN(y)) {
+        counts[y] = (counts[y] || 0) + 1;
+      }
+    });
+    return counts;
   }, [allRecords]);
 
   // Reset page when month or search changes
@@ -630,6 +669,8 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
         selectedYear,
         setSelectedYear,
         availableYears,
+        yearCounts,
+        addCustomYear,
         searchQuery,
         setSearchQuery,
         filters,

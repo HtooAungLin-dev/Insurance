@@ -12,7 +12,8 @@ import {
   Layers,
   Archive,
   Trash2,
-  LogOut
+  LogOut,
+  Fingerprint
 } from 'lucide-react';
 import { useVehicles } from '../context/VehicleContext';
 import { useAuth } from '../context/AuthContext';
@@ -34,7 +35,8 @@ export const Header: React.FC = () => {
     archiveCount
   } = useVehicles();
 
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, registerFingerprint, isFingerprintRegistered } = useAuth();
+  const [fingerprintNotice, setFingerprintNotice] = useState<string | null>(null);
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
@@ -261,7 +263,31 @@ export const Header: React.FC = () => {
                       <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
                       <span>Force Real-Time Sync</span>
                     </button>
+
+                    <button
+                      onClick={async () => {
+                        const res = await registerFingerprint();
+                        if (res.success) {
+                          setFingerprintNotice('Device fingerprint registered successfully!');
+                          setTimeout(() => setFingerprintNotice(null), 3000);
+                        }
+                      }}
+                      className="w-full text-left px-3.5 py-2 text-blue-700 hover:bg-blue-50 flex items-center gap-2 transition-colors font-medium"
+                    >
+                      <Fingerprint className="w-3.5 h-3.5 text-blue-600" />
+                      <span>
+                        {isFingerprintRegistered 
+                          ? 'Update Device Fingerprint' 
+                          : 'Register Device Fingerprint'}
+                      </span>
+                    </button>
                   </div>
+
+                  {fingerprintNotice && (
+                    <div className="px-3.5 py-1.5 bg-emerald-50 text-emerald-800 text-[11px] font-semibold">
+                      {fingerprintNotice}
+                    </div>
+                  )}
 
                   <div className="pt-1 border-t border-slate-100">
                     <button

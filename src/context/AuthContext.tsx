@@ -1,10 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthUser } from '../types';
+import { 
+  authenticateWithFingerprint, 
+  registerDeviceFingerprint, 
+  hasRegisteredFingerprint 
+} from '../services/biometricAuth';
 
 interface AuthContextType {
   currentUser: AuthUser | null;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithFingerprint: () => Promise<{ success: boolean; error?: string }>;
+  registerFingerprint: () => Promise<{ success: boolean; error?: string }>;
+  isFingerprintRegistered: boolean;
   logout: () => void;
   updatePassword: (oldPass: string, newPass: string) => boolean;
 }
@@ -35,6 +43,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   });
 
+  const [isFingerprintRegistered, setIsFingerprintRegistered] = useState<boolean>(() => {
+    return hasRegisteredFingerprint();
+  });
+
   const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     const trimmedUser = username.trim().toLowerCase();
     const storedPass = localStorage.getItem(PASS_KEY) || DEFAULT_PASSWORD;
@@ -56,6 +68,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithFingerprint = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const authRes = await authenticateWithFingerprint();
+      if (!authRes.success) {
+        return { success: false, error: authRes.error || 'Fingerprint verification failed.' };
+      }
+
+      const userToSave = { ...DEFAULT_USER };
+      setCurrentUser(userToSave);
+      localStorage.setItem(SESSION_KEY, JSON.stringify(userToSave));
+      setIsFingerprintRegistered(true);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Fingerprint authentication encountered an error.' };
+    }
+  };
+
+  const registerFingerprint = async (): Promise<{ success: boolean; error?: string }> => {
+    const res = await registerDeviceFingerprint(currentUser?.displayName || 'Htay Aung');
+    if (res.success) {
+      setIsFingerprintRegistered(true);
+    }
+    return res;
+  };
+
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem(SESSION_KEY);
@@ -74,6 +111,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentUser,
         isAuthenticated: Boolean(currentUser),
         login,
+        loginWithFingerprint,
+        registerFingerprint,
+        isFingerprintRegistered,
         logout,
         updatePassword,
       }}

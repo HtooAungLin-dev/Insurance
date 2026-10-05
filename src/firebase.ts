@@ -4,7 +4,8 @@ import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const dbId = (firebaseConfig as { firestoreDatabaseId?: string }).firestoreDatabaseId || 'ai-studio-autoledgermonthl-93a26713-1a30-402b-9c39-00d99719f088';
+export const db = getFirestore(app, dbId);
 export const auth = getAuth(app);
 
 // Test connection on boot
@@ -13,7 +14,7 @@ async function testConnection() {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
+      console.warn('Firebase Firestore test connection:', error.message);
     }
   }
 }

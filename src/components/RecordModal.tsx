@@ -16,7 +16,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   onClose,
   recordToEdit,
 }) => {
-  const { addRecord, updateRecord, saveDraftToArchive, activeMonth, selectedYear, languageMode } = useVehicles();
+  const { addRecord, updateRecord, saveDraftToArchive, activeMonth, selectedYear, availableYears, languageMode } = useVehicles();
 
   const isEditing = Boolean(recordToEdit);
 
@@ -40,6 +40,18 @@ export const RecordModal: React.FC<RecordModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [draftToast, setDraftToast] = useState(false);
+
+  // Dynamically compute year options for modal
+  const modalYearOptions = React.useMemo(() => {
+    const set = new Set<number>(availableYears);
+    const curr = new Date().getFullYear();
+    set.add(curr);
+    set.add(curr + 1);
+    set.add(curr + 2);
+    set.add(curr + 3);
+    if (expireYear) set.add(expireYear);
+    return Array.from(set).sort((a, b) => a - b);
+  }, [availableYears, expireYear]);
 
   // Reset or populate fields when modal opens
   useEffect(() => {
@@ -230,7 +242,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
                 onChange={(e) => setExpireYear(Number(e.target.value))}
                 className="w-full px-3 py-2 bg-blue-50/60 border border-blue-200 focus:border-blue-500 rounded-lg text-sm font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               >
-                {[2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032].map((yr) => (
+                {modalYearOptions.map((yr) => (
                   <option key={yr} value={yr}>
                     {yr}
                   </option>
