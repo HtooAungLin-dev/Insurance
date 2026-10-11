@@ -180,7 +180,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
             carValue: Number(parts[4]) || 25000,
             windshieldValue: Number(parts[5]) || 500,
             premiumAmount: Number(parts[6]) || 400,
-            status: 'Rental',
+            status: 'Active',
             validityPeriod: parts[8] || '1 Year',
             claimDate: parts[9] || '',
             commissionDate: parts[10] || '',

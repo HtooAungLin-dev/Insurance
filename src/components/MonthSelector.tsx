@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useVehicles } from '../context/VehicleContext';
 import { MONTHS } from '../data/initialData';
 import { MonthKey } from '../types';
-import { Calendar, Archive, Plus, Check, X, Filter } from 'lucide-react';
+import { Calendar, Archive, Plus, Check, X, Filter, ChevronDown } from 'lucide-react';
 import { getText } from '../utils/translations';
 
 export const MonthSelector: React.FC = () => {
@@ -23,6 +23,7 @@ export const MonthSelector: React.FC = () => {
   const [showAddYearInput, setShowAddYearInput] = useState(false);
   const [newYearInput, setNewYearInput] = useState('');
   const [showOnlyActiveMonths, setShowOnlyActiveMonths] = useState(false);
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
 
   // Dynamic count of records matching the current active year filter
   const currentFilteredRecordsCount = useMemo(() => {
@@ -73,99 +74,171 @@ export const MonthSelector: React.FC = () => {
           </div>
         </div>
 
-        {/* Dynamic Expire Year Selector */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto flex-wrap">
-          <span className="text-xs text-slate-500 font-semibold whitespace-nowrap">
-            {languageMode === 'my' ? 'သက်တမ်းကုန်နှစ်:' : 'Expire Year:'}
-          </span>
-          <div className="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs font-semibold overflow-x-auto max-w-full">
-            {/* All Years Tab */}
+        {/* Dynamic Expire Year Dropdown Selector */}
+        <div className="relative self-start sm:self-auto">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-semibold whitespace-nowrap">
+              {languageMode === 'my' ? 'သက်တမ်းကုန်နှစ်:' : 'Expire Year:'}
+            </span>
+
+            {/* Dropdown Toggle Button */}
             <button
-              onClick={() => setSelectedYear('all')}
-              className={`min-h-[30px] px-2.5 py-1 rounded-md transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                selectedYear === 'all'
-                  ? 'bg-blue-600 text-white shadow-xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+              type="button"
+              onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)}
+              className="min-h-[36px] px-3.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-400 text-slate-800 text-xs font-bold flex items-center gap-2 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
             >
-              <span>All Years</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                selectedYear === 'all' ? 'bg-white/25 text-white' : 'bg-slate-200 text-slate-600'
-              }`}>
-                {allRecords.length}
+              <span className="text-blue-600 font-bold">
+                {selectedYear === 'all' ? 'All Expire Years' : `Expire Year: ${selectedYear}`}
               </span>
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                {selectedYear === 'all' ? allRecords.length : (yearCounts[selectedYear] || 0)}
+              </span>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-150 ${isYearDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
+          </div>
 
-            {/* Dynamic Existing Years from Records */}
-            {availableYears.map((year) => {
-              const count = yearCounts[year] || 0;
-              const isSelected = selectedYear === year;
+          {/* Dropdown Menu Modal / Overlay */}
+          {isYearDropdownOpen && (
+            <>
+              {/* Click outside backdrop */}
+              <div 
+                className="fixed inset-0 z-30" 
+                onClick={() => {
+                  setIsYearDropdownOpen(false);
+                  setShowAddYearInput(false);
+                }} 
+              />
+              
+              <div className="absolute right-0 mt-1.5 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-40 text-xs animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-3.5 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                  {languageMode === 'my' ? 'သက်တမ်းကုန်နှစ် ရွေးချယ်ပါ' : 'Select Expire Year'}
+                </div>
 
-              return (
+                {/* Option: All Years */}
                 <button
-                  key={year}
-                  onClick={() => setSelectedYear(year)}
-                  className={`min-h-[30px] px-2.5 py-1 rounded-md transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                    isSelected 
-                      ? 'bg-white text-blue-600 shadow-xs font-bold border border-slate-200/80' 
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  type="button"
+                  onClick={() => {
+                    setSelectedYear('all');
+                    setIsYearDropdownOpen(false);
+                  }}
+                  className={`w-full px-3.5 py-2.5 text-left flex items-center justify-between transition-colors cursor-pointer ${
+                    selectedYear === 'all' 
+                      ? 'bg-blue-50 text-blue-700 font-bold' 
+                      : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
-                  <span>{year}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                    isSelected 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : count > 0 
-                        ? 'bg-slate-200 text-slate-700' 
-                        : 'bg-slate-100 text-slate-400'
+                  <span className="flex items-center gap-2">
+                    {selectedYear === 'all' ? (
+                      <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    ) : (
+                      <span className="w-3.5 shrink-0" />
+                    )}
+                    <span>All Expire Years</span>
+                  </span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    selectedYear === 'all' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
-                    {count}
+                    {allRecords.length}
                   </span>
                 </button>
-              );
-            })}
 
-            {/* Add Custom Year Dynamically */}
-            {showAddYearInput ? (
-              <div className="flex items-center gap-1 px-1.5 py-0.5">
-                <input
-                  type="number"
-                  placeholder="YYYY"
-                  autoFocus
-                  value={newYearInput}
-                  onChange={(e) => setNewYearInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAddYearSubmit();
-                    if (e.key === 'Escape') setShowAddYearInput(false);
-                  }}
-                  className="w-16 px-1.5 py-0.5 text-xs border border-blue-400 rounded bg-white font-mono text-center focus:outline-none"
-                />
-                <button
-                  onClick={handleAddYearSubmit}
-                  className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
-                  title="Add Year"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => setShowAddYearInput(false)}
-                  className="p-1 text-slate-400 hover:bg-slate-100 rounded"
-                  title="Cancel"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+                <div className="my-1 border-t border-slate-100" />
+
+                {/* Dynamic List of Available Years */}
+                <div className="max-h-56 overflow-y-auto divide-y divide-slate-50">
+                  {availableYears.map((year) => {
+                    const count = yearCounts[year] || 0;
+                    const isSelected = selectedYear === year;
+
+                    return (
+                      <button
+                        key={year}
+                        type="button"
+                        onClick={() => {
+                          setSelectedYear(year);
+                          setIsYearDropdownOpen(false);
+                        }}
+                        className={`w-full px-3.5 py-2.5 text-left flex items-center justify-between transition-colors cursor-pointer ${
+                          isSelected 
+                            ? 'bg-blue-50 text-blue-700 font-bold' 
+                            : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {isSelected ? (
+                            <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span>Year {year}</span>
+                        </span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                          isSelected 
+                            ? 'bg-blue-100 text-blue-700' 
+                            : count > 0 
+                              ? 'bg-slate-200 text-slate-700' 
+                              : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          {count} {count === 1 ? 'car' : 'cars'}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="my-1 border-t border-slate-100" />
+
+                {/* Inline Add Custom Year inside Dropdown */}
+                <div className="p-2 bg-slate-50/70">
+                  {showAddYearInput ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        placeholder="YYYY"
+                        autoFocus
+                        value={newYearInput}
+                        onChange={(e) => setNewYearInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddYearSubmit();
+                            setIsYearDropdownOpen(false);
+                          }
+                          if (e.key === 'Escape') setShowAddYearInput(false);
+                        }}
+                        className="w-full px-2 py-1 text-xs border border-blue-400 rounded-lg bg-white font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleAddYearSubmit();
+                          setIsYearDropdownOpen(false);
+                        }}
+                        className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shrink-0 cursor-pointer"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddYearInput(false)}
+                        className="p-1 text-slate-400 hover:bg-slate-200 rounded-lg shrink-0 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowAddYearInput(true)}
+                      className="w-full px-2.5 py-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg transition-colors text-xs font-semibold flex items-center justify-center gap-1.5 border border-dashed border-slate-300 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-blue-600" />
+                      <span>{languageMode === 'my' ? '+ အခြားနှစ်ထည့်ရန်' : '+ Add Custom Year'}</span>
+                    </button>
+                  )}
+                </div>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowAddYearInput(true)}
-                className="min-h-[30px] px-2 py-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50/60 rounded-md transition-colors text-xs font-semibold flex items-center gap-1 ml-0.5"
-                title="Add any expire year dynamically"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Year</span>
-              </button>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -145,29 +145,17 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const unsubscribe = onSnapshot(colRef, (snapshot) => {
       const recordsData: VehicleRecord[] = snapshot.docs.map(docSnap => {
         const raw = docSnap.data();
-        const derivedExpireYear = raw.expireYear || (raw.validityPeriod ? extractExpireYear(raw.validityPeriod, raw.year || 2027) : (raw.year || 2027));
+        const storedYear = typeof raw.expireYear === 'number' 
+          ? raw.expireYear 
+          : (typeof raw.year === 'number' 
+              ? raw.year 
+              : (raw.validityPeriod ? extractExpireYear(raw.validityPeriod, 2027) : 2027));
         return {
           ...raw,
           id: docSnap.id,
-          year: raw.expireYear || raw.year || derivedExpireYear,
-          expireYear: raw.expireYear || derivedExpireYear,
+          year: storedYear,
+          expireYear: storedYear,
         } as VehicleRecord;
-      });
-
-      // Background migration: if any Firestore doc is stored with year 2026,
-      // but its validity indicates an expire year (e.g. 2027, 2028), migrate it immediately
-      snapshot.docs.forEach(docSnap => {
-        const raw = docSnap.data();
-        if (raw.validityPeriod) {
-          const extracted = extractExpireYear(raw.validityPeriod, raw.year);
-          if (extracted && extracted !== raw.year) {
-            updateDoc(docSnap.ref, {
-              year: extracted,
-              expireYear: extracted,
-              updatedAt: new Date().toISOString()
-            }).catch(() => {});
-          }
-        }
       });
 
       setAllRecords(recordsData);
@@ -237,6 +225,11 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const availableYears = useMemo(() => {
     const yearsSet = new Set<number>();
     
+    // Always provide 2026, 2027, 2028 baseline tabs for instant switching
+    yearsSet.add(2026);
+    yearsSet.add(2027);
+    yearsSet.add(2028);
+
     // Dynamically derive from existing records
     allRecords.forEach(r => {
       const y = r.expireYear || r.year;
@@ -251,11 +244,6 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Include selectedYear if it's a specific year
     if (typeof selectedYear === 'number' && !isNaN(selectedYear)) {
       yearsSet.add(selectedYear);
-    }
-
-    // Fallback if no records exist yet
-    if (yearsSet.size === 0) {
-      yearsSet.add(new Date().getFullYear());
     }
 
     return Array.from(yearsSet).sort((a, b) => a - b);
@@ -296,7 +284,11 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Add Record to Firebase - stored in the expire year!
   const addRecord = useCallback(async (data: Omit<VehicleRecord, 'id' | 'createdAt' | 'updatedAt' | 'srNo'>): Promise<VehicleRecord> => {
     const targetMonth = data.month || (activeMonth === 'all' || activeMonth === 'archive' ? 'Jan' : activeMonth);
-    const expireYearToStore = data.expireYear || data.year || extractExpireYear(data.validityPeriod, typeof selectedYear === 'number' ? selectedYear : 2027);
+    const expireYearToStore = typeof data.expireYear === 'number' && !isNaN(data.expireYear)
+      ? data.expireYear
+      : (typeof data.year === 'number' && !isNaN(data.year)
+          ? data.year
+          : (typeof selectedYear === 'number' ? selectedYear : 2027));
     const existingInMonth = allRecords.filter(r => r.month === targetMonth && (r.expireYear || r.year) === expireYearToStore);
     const nextSr = existingInMonth.length + 1;
     const nowIso = new Date().toISOString();
@@ -326,7 +318,9 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Update Record in Firebase - preserve/update expire year
   const updateRecord = useCallback(async (id: string, updates: Partial<VehicleRecord>) => {
     const nowIso = new Date().toISOString();
-    const expireYearToStore = updates.expireYear || updates.year || (updates.validityPeriod ? extractExpireYear(updates.validityPeriod) : undefined);
+    const expireYearToStore = typeof updates.expireYear === 'number' && !isNaN(updates.expireYear)
+      ? updates.expireYear
+      : (typeof updates.year === 'number' && !isNaN(updates.year) ? updates.year : undefined);
 
     const sanitizedUpdates = {
       ...updates,
@@ -421,7 +415,7 @@ export const VehicleProvider: React.FC<{ children: React.ReactNode }> = ({ child
       claimDate: partialData.claimDate || '',
       commissionDate: partialData.commissionDate || '',
       remarks: partialData.remarks || 'Unfinished draft entry',
-      status: partialData.status || 'Reserved',
+      status: partialData.status || 'Pending',
       pickupArea: partialData.pickupArea || '',
       invoiceNo: partialData.invoiceNo || 'DRAFT-' + Math.floor(1000 + Math.random() * 9000),
       isDraft: true,

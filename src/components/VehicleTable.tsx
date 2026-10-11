@@ -75,44 +75,50 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
     );
   };
 
-  // Status Badge styling strictly matching Screenshot 1:
+  // Status Badge styling: Active, Pending, Contract End
   const renderStatusBadge = (record: VehicleRecord) => {
-    const status = record.status;
-    let badgeClass = '';
-    
-    switch (status) {
-      case 'Rental':
-        badgeClass = 'bg-[#fff7ed] text-[#ea580c] border-[#ffedd5] hover:bg-orange-100/60';
-        break;
-      case 'Done':
-        badgeClass = 'bg-[#f0fdf4] text-[#16a34a] border-[#dcfce7] hover:bg-emerald-100/60';
-        break;
-      case 'Reserved':
-        badgeClass = 'bg-[#faf5ff] text-[#9333ea] border-[#f3e8ff] hover:bg-purple-100/60';
-        break;
-      case 'Active':
-        badgeClass = 'bg-[#eff6ff] text-[#2563eb] border-[#dbeafe] hover:bg-blue-100/60';
-        break;
-      case 'Claimed':
-        badgeClass = 'bg-[#fff1f2] text-[#e11d48] border-[#ffe4e6] hover:bg-rose-100/60';
-        break;
-      default:
-        badgeClass = 'bg-slate-50 text-slate-600 border-slate-200';
+    // Normalize status (supports legacy values gracefully)
+    const rawStatus = (record.status || 'Active') as string;
+    let normalizedStatus: RecordStatus = 'Active';
+
+    if (rawStatus === 'Contract End' || rawStatus === 'Done' || rawStatus === 'Claimed') {
+      normalizedStatus = 'Contract End';
+    } else if (rawStatus === 'Pending' || rawStatus === 'Reserved' || rawStatus === 'In Repair') {
+      normalizedStatus = 'Pending';
+    } else {
+      normalizedStatus = 'Active';
     }
+
+    let badgeClass = '';
+    switch (normalizedStatus) {
+      case 'Active':
+        badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
+        break;
+      case 'Pending':
+        badgeClass = 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100';
+        break;
+      case 'Contract End':
+        badgeClass = 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200';
+        break;
+    }
+
+    const availableStatuses: RecordStatus[] = ['Active', 'Pending', 'Contract End'];
 
     return (
       <div className="relative group/status inline-block">
         <button
           onClick={(e) => {
             e.stopPropagation();
-            const statuses: RecordStatus[] = ['Rental', 'Done', 'Reserved', 'Active', 'Claimed'];
-            const nextIdx = (statuses.indexOf(status) + 1) % statuses.length;
-            updateRecord(record.id, { status: statuses[nextIdx] });
+            const nextIdx = (availableStatuses.indexOf(normalizedStatus) + 1) % availableStatuses.length;
+            updateRecord(record.id, { status: availableStatuses[nextIdx] });
           }}
-          title="Click to cycle status"
-          className={`min-h-[28px] px-3 py-1 rounded-full text-xs font-semibold border transition-all shadow-2xs ${badgeClass} cursor-pointer`}
+          title={`Click to cycle status (${availableStatuses.join(' → ')})`}
+          className={`min-h-[28px] px-3 py-1 rounded-full text-xs font-bold border transition-all shadow-2xs ${badgeClass} cursor-pointer flex items-center gap-1.5`}
         >
-          {status}
+          <span className={`w-1.5 h-1.5 rounded-full ${
+            normalizedStatus === 'Active' ? 'bg-emerald-500' : normalizedStatus === 'Pending' ? 'bg-amber-500' : 'bg-slate-400'
+          }`} />
+          <span>{normalizedStatus}</span>
         </button>
       </div>
     );
@@ -667,7 +673,7 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                             {/* Cycle Status */}
                             <button
                               onClick={() => {
-                                const statuses: RecordStatus[] = ['Rental', 'Done', 'Reserved', 'Active', 'Claimed'];
+                                const statuses: RecordStatus[] = ['Active', 'Pending', 'Contract End'];
                                 const nextIdx = (statuses.indexOf(record.status) + 1) % statuses.length;
                                 updateRecord(record.id, { status: statuses[nextIdx] });
                                 setActiveMenuId(null);

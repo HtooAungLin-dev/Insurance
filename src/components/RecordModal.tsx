@@ -27,7 +27,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   const [vehicleNo, setVehicleNo] = useState('');
   const [vehicleModel, setVehicleModel] = useState('');
   const [ownerName, setOwnerName] = useState('');
-  const [status, setStatus] = useState<RecordStatus>('Rental');
+  const [status, setStatus] = useState<RecordStatus>('Active');
   const [carValue, setCarValue] = useState<number | ''>('');
   const [windshieldValue, setWindshieldValue] = useState<number | ''>('');
   const [premiumAmount, setPremiumAmount] = useState<number | ''>('');
@@ -64,7 +64,12 @@ export const RecordModal: React.FC<RecordModalProps> = ({
         setVehicleNo(recordToEdit.vehicleNo || '');
         setVehicleModel(recordToEdit.vehicleModel || '');
         setOwnerName(recordToEdit.ownerName || '');
-        setStatus(recordToEdit.status || 'Rental');
+        const normStatus: RecordStatus = recordToEdit.status === 'Contract End' || (recordToEdit.status as string) === 'Done' || (recordToEdit.status as string) === 'Claimed'
+          ? 'Contract End'
+          : recordToEdit.status === 'Pending' || (recordToEdit.status as string) === 'Reserved' || (recordToEdit.status as string) === 'In Repair'
+          ? 'Pending'
+          : 'Active';
+        setStatus(normStatus);
         setCarValue(recordToEdit.carValue ?? '');
         setWindshieldValue(recordToEdit.windshieldValue ?? '');
         setPremiumAmount(recordToEdit.premiumAmount ?? '');
@@ -84,12 +89,11 @@ export const RecordModal: React.FC<RecordModalProps> = ({
         setVehicleNo('');
         setVehicleModel('');
         setOwnerName('');
-        setStatus('Rental');
+        setStatus('Active');
         setCarValue('');
         setWindshieldValue('');
         setPremiumAmount('');
-        const today = new Date().toISOString().split('T')[0];
-        setValidityPeriod(`${today} - 1 Year`);
+        setValidityPeriod(`${initYear - 1} - ${initYear}`);
         setPickupArea('');
         setClaimDate('');
         setCommissionDate('');
@@ -275,14 +279,11 @@ export const RecordModal: React.FC<RecordModalProps> = ({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as RecordStatus)}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               >
-                <option value="Rental">Rental (ငှားရမ်းဆဲ)</option>
-                <option value="Done">Done (ပြီးစီး)</option>
-                <option value="Reserved">Reserved (ကြိုတင်မှာယူ)</option>
                 <option value="Active">Active (စာချုပ်အသက်ဝင်ဆဲ)</option>
-                <option value="Claimed">Claimed (လျော်ကြေးတင်ထား)</option>
-                <option value="In Repair">In Repair (ပြင်ဆင်ဆဲ)</option>
+                <option value="Pending">Pending (ဆိုင်းငံ့ / စောင့်ဆိုင်းဆဲ)</option>
+                <option value="Contract End">Contract End (စာချုပ်သက်တမ်းကုန်)</option>
               </select>
             </div>
           </div>
@@ -437,15 +438,8 @@ export const RecordModal: React.FC<RecordModalProps> = ({
               <input
                 type="text"
                 value={validityPeriod}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setValidityPeriod(val);
-                  const detected = extractExpireYear(val);
-                  if (detected && detected >= 2020 && detected <= 2050) {
-                    setExpireYear(detected);
-                  }
-                }}
-                placeholder="e.g. Dec 30, 2027 or 1 Year"
+                onChange={(e) => setValidityPeriod(e.target.value)}
+                placeholder="e.g. Dec 30, 2027 or 2026 - 2027"
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
             </div>

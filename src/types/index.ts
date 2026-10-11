@@ -12,7 +12,7 @@ export type MonthKey =
   | 'Nov' 
   | 'Dec';
 
-export type RecordStatus = 'Rental' | 'Done' | 'Reserved' | 'Active' | 'Claimed' | 'In Repair';
+export type RecordStatus = 'Active' | 'Pending' | 'Contract End';
 
 export type InsuranceCompany = 'Young' | 'GGI' | 'FNI' | 'KBZ' | 'MI';
 

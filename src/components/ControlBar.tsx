@@ -167,16 +167,22 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           <div className="flex items-center gap-2">
             {/* Quick status change */}
             <button
-              onClick={() => handleBulkStatusChange('Rental')}
-              className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 rounded-md transition-colors"
-            >
-              Mark Rental
-            </button>
-            <button
-              onClick={() => handleBulkStatusChange('Done')}
+              onClick={() => handleBulkStatusChange('Active')}
               className="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 rounded-md transition-colors"
             >
-              Mark Done
+              Mark Active
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange('Pending')}
+              className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 rounded-md transition-colors"
+            >
+              Mark Pending
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange('Contract End')}
+              className="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-500/40 rounded-md transition-colors"
+            >
+              Mark Contract End
             </button>
 
             {/* Batch delete */}

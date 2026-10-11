@@ -20,7 +20,7 @@
         "claimDate": { "type": "string", "maxLength": 100 },
         "commissionDate": { "type": "string", "maxLength": 100 },
         "remarks": { "type": "string", "maxLength": 500 },
-        "status": { "type": "string", "enum": ["Rental", "Done", "Reserved", "Active", "Claimed", "In Repair"] },
+        "status": { "type": "string", "enum": ["Active", "Pending", "Contract End"] },
         "pickupArea": { "type": "string", "maxLength": 200 },
         "invoiceNo": { "type": "string", "maxLength": 50 },
         "isDraft": { "type": "boolean" },

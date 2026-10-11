@@ -48,7 +48,7 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose }) =
                 Status / အခြေအနေ
               </label>
               <div className="grid grid-cols-2 gap-2">
-                {['all', 'Rental', 'Done', 'Reserved', 'Active', 'Claimed'].map((st) => (
+                {['all', 'Active', 'Pending', 'Contract End'].map((st) => (
                   <button
                     key={st}
                     onClick={() => setFilters(prev => ({ ...prev, status: st }))}
